@@ -1,0 +1,4 @@
+name: BetaDeaths
+version: '${project.version}'
+main: me.lukiiy.BetaDeaths.BetaDeaths
+author: Lukiiy
