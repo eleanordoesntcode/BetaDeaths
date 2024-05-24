@@ -6,7 +6,7 @@
 
     <groupId>me.lukiiy</groupId>
     <artifactId>BetaDeaths</artifactId>
-    <version>1.0</version>
+    <version>0.5</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
