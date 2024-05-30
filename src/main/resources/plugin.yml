@@ -2,3 +2,4 @@ name: BetaDeaths
 version: '${project.version}'
 main: me.lukiiy.BetaDeaths.BetaDeaths
 author: Lukiiy
+description: Adds Death Messages to old beta versions

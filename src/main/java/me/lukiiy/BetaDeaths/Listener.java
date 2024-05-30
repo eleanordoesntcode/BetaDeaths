@@ -24,6 +24,8 @@ public class Listener extends EntityListener {
         Player p = (Player) e.getEntity();
         EntityDamageEvent.DamageCause c = p.getLastDamageCause().getCause();
 
+        Bukkit.getServer().broadcastMessage(Bukkit.getServer().getVersion());
+
         // todo
         String reason;
         String damager = BetaDeaths.get("unknownEntity");
@@ -33,7 +35,7 @@ public class Listener extends EntityListener {
             if (lastDamager instanceof Projectile) lastDamager = ((Projectile) lastDamager).getShooter();
             if (lastDamager instanceof LivingEntity) {
                 damager = (lastDamager instanceof Player) ? ((Player) lastDamager).getName() : Util.getEntityName(lastDamager);
-                if (lastDamager instanceof Creeper || lastDamager instanceof Explosive) c = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
+                if (lastDamager instanceof Creeper && c == EntityDamageEvent.DamageCause.ENTITY_ATTACK) c = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
             }
         }
 
@@ -87,8 +89,8 @@ public class Listener extends EntityListener {
         }
 
         if (reason.isEmpty()) return;
-        reason = reason.replace("%s", damager);
-        Bukkit.getServer().broadcastMessage(p.getName() + " " + reason);
-        Bukkit.getServer().getLogger().info(p.getName() + " " + reason);
+        String msg = p.getName() + " " + reason.replace("%s", damager);
+        Bukkit.getServer().broadcastMessage(msg);
+        BetaDeaths.logger.info(msg);
     }
 }
