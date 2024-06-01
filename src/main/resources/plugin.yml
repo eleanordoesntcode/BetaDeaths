@@ -3,3 +3,7 @@ version: '${project.version}'
 main: me.lukiiy.BetaDeaths.BetaDeaths
 author: Lukiiy
 description: Adds Death Messages to old beta versions
+commands:
+  betadeaths:
+    description: Reloads the plugin
+    permission: betadeaths.reload

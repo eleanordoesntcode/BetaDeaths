@@ -11,5 +11,4 @@ public class Util {
     public static String getEntityName(Entity e) {
         return e.getClass().getSimpleName().replace("Craft", "");
     }
-
 }

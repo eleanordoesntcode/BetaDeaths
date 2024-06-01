@@ -2,7 +2,6 @@ package me.lukiiy.BetaDeaths;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -23,8 +22,6 @@ public class Listener extends EntityListener {
         if (!(e.getEntity() instanceof Player)) return;
         Player p = (Player) e.getEntity();
         EntityDamageEvent.DamageCause c = p.getLastDamageCause().getCause();
-
-        Bukkit.getServer().broadcastMessage(Bukkit.getServer().getVersion());
 
         // todo
         String reason;
@@ -89,7 +86,10 @@ public class Listener extends EntityListener {
         }
 
         if (reason.isEmpty()) return;
-        String msg = p.getName() + " " + reason.replace("%s", damager);
+        String msg = reason
+                .replace("(p)", p.getDisplayName())
+                .replace("(e)", damager)
+                .replace('&', '§');
         Bukkit.getServer().broadcastMessage(msg);
         BetaDeaths.logger.info(msg);
     }

@@ -11,20 +11,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BetaDeaths extends JavaPlugin {
+    public static BetaDeaths inst;
     public static Configuration config;
     public static Logger logger;
 
     @Override
     public void onEnable() {
+        inst = this;
         PluginManager pl = getServer().getPluginManager();
         logger = getServer().getLogger();
 
         pl.registerEvent(Event.Type.ENTITY_DAMAGE, new Listener(), Event.Priority.Lowest, this);
         pl.registerEvent(Event.Type.ENTITY_DEATH, new Listener(), Event.Priority.Normal, this);
+        getCommand("betadeaths").setExecutor(new ReloadCMD());
 
         if (mcVersion() > 173) {
-            Logger l = getServer().getLogger();
-            l.warning("This plugin will be disabled due to death messages being added in b1.8.");
+            logger.warning("This plugin will be disabled due to death messages being added in b1.8.");
             pl.disablePlugin(this);
         }
 
@@ -36,27 +38,27 @@ public class BetaDeaths extends JavaPlugin {
 
     public static String get(String path) {return config.getString(path);}
 
-    private void config() { // todo
+    public void config() { // todo
         config = getConfiguration();
         config.load();
-        config.getString("contact", "was pricked to death");
-        config.getString("attack", "was slain by %s");
-        config.getString("attack_projectile", "was shot by %s");
-        config.getString("fall", "fell from a high place");
-        config.getString("hard_fall", "hit the ground too hard");
-        config.getString("fire", "went up in flames");
-        config.getString("burn", "burned to death");
-        config.getString("lava", "tried to swim in lava");
-        config.getString("void", "fell out of the world");
-        config.getString("suicide", "was killed");
-        config.getString("drown", "drowned");
-        config.getString("lightning", "was struck by lightning");
-        config.getString("suffocation", "suffocated in a wall");
-        config.getString("explosion", "was blown up by %s");
-        config.getString("explosion_block", "blew up");
-        config.getString("void", "fell out of the world");
-        config.getString("default_cause", "died");
-        config.getString("unknownEntity", "unknown");
+        config.getString("contact", "(p) was pricked to death");
+        config.getString("attack", "(p) was slain by (e)");
+        config.getString("attack_projectile", "(p) was shot by (e)");
+        config.getString("fall", "(p) fell from a high place");
+        config.getString("hard_fall", "(p) hit the ground too hard");
+        config.getString("fire", "(p) went up in flames");
+        config.getString("burn", "(p) burned to death");
+        config.getString("lava", "(p) tried to swim in lava");
+        config.getString("void", "(p) fell out of the world");
+        config.getString("suicide", "(p) was killed");
+        config.getString("drown", "(p) drowned");
+        config.getString("lightning", "(p) was struck by lightning");
+        config.getString("suffocation", "(p) suffocated in a wall");
+        config.getString("explosion", "(p) was blown up by (e)");
+        config.getString("explosion_block", "(p) blew up");
+        config.getString("void", "(p) fell out of the world");
+        config.getString("default_cause", "(p) died");
+        config.getString("unknownEntity", "(p) unknown");
         config.save();
     }
 
