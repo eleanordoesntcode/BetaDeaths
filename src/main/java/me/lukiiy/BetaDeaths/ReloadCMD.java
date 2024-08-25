@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 public class ReloadCMD implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        BetaDeaths.inst.config();
+        BetaDeaths.getInstance().setupConfig();
         commandSender.sendMessage("§aBetaDeaths Reload complete.");
         return true;
     }

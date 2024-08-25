@@ -1,5 +1,6 @@
 package me.lukiiy.BetaDeaths;
 
+import me.lukiiy.discordBridge.DCBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -10,87 +11,92 @@ import org.bukkit.event.entity.EntityListener;
 
 public class Listener extends EntityListener {
     public void onEntityDamage(EntityDamageEvent ev) {
-        if (!(ev.getEntity() instanceof Player)) return;
-        if (!(ev instanceof EntityDamageByEntityEvent)) return;
-        EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) ev;
-        Player p = (Player) e.getEntity();
-        Entity damager = e.getDamager();
-        Util.lastDamager.put(p, damager);
+        if (!(ev instanceof EntityDamageByEntityEvent) || !(isEntityCacheable(ev.getEntity()))) return;
+        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) ev;
+
+        BetaDeaths.setEntityLastDamager(event.getEntity(), event.getDamager());
     }
 
     public void onEntityDeath(EntityDeathEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player p = (Player) e.getEntity();
-        EntityDamageEvent.DamageCause c = p.getLastDamageCause().getCause();
+        Entity entity = e.getEntity();
+        
+        if (!isEntityCacheable(entity)) return;
+        if (entity instanceof Tameable && !((Tameable) entity).isTamed()) return;
 
-        // todo
-        String reason;
-        String damager = BetaDeaths.get("unknownEntity");
-        Entity lastDamager = Util.lastDamager.get(p);
+        String entityName = entity instanceof Player ? ((Player) entity).getName() : GenericUtils.getEntityName(entity);
+
+        EntityDamageEvent.DamageCause cause = entity.getLastDamageCause().getCause();
+
+        Entity lastDamager = BetaDeaths.getEntityLastDamager(entity);
+        String damagerName = BetaDeaths.getDeathMsg("unknownEntity");
+
 
         if (lastDamager != null) {
             if (lastDamager instanceof Projectile) lastDamager = ((Projectile) lastDamager).getShooter();
             if (lastDamager instanceof LivingEntity) {
-                damager = (lastDamager instanceof Player) ? ((Player) lastDamager).getName() : Util.getEntityName(lastDamager);
-                if (lastDamager instanceof Creeper && c == EntityDamageEvent.DamageCause.ENTITY_ATTACK) c = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
+                damagerName = (lastDamager instanceof Player) ? ((Player) lastDamager).getDisplayName() : GenericUtils.getEntityName(lastDamager);
+                if (lastDamager instanceof Creeper && cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) cause = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
             }
         }
 
-        // todo!!!
-        switch (c) {
+        String reason;
+        switch (cause) {
             case CONTACT:
-                reason = BetaDeaths.get("contact");
+                reason = BetaDeaths.getDeathMsg("contact");
                 break;
             case ENTITY_ATTACK:
-                reason = BetaDeaths.get("attack");
+                reason = BetaDeaths.getDeathMsg("attack");
                 break;
             case FALL:
-                reason = BetaDeaths.get("fall");
-                if (p.getFallDistance() < 5f) reason = BetaDeaths.get("hard_fall");
+                reason = BetaDeaths.getDeathMsg("fall");
+                if (entity.getFallDistance() < 5f) reason = BetaDeaths.getDeathMsg("hard_fall");
                 break;
             case FIRE:
             case FIRE_TICK:
-                if (p.getWorld().getBlockAt(p.getLocation()).getType() == Material.FIRE) reason = BetaDeaths.get("fire");
-                else reason = BetaDeaths.get("burn");
+                if (entity.getWorld().getBlockAt(entity.getLocation()).getType() == Material.FIRE) reason = BetaDeaths.getDeathMsg("fire");
+                else reason = BetaDeaths.getDeathMsg("burn");
                 break;
             case LAVA:
-                reason = BetaDeaths.get("lava");
+                reason = BetaDeaths.getDeathMsg("lava");
                 break;
             case VOID:
-                reason = BetaDeaths.get("void");
+                reason = BetaDeaths.getDeathMsg("void");
                 break;
             case SUICIDE:
-                reason = BetaDeaths.get("suicide");
+                reason = BetaDeaths.getDeathMsg("suicide");
                 break;
             case DROWNING:
-                reason = BetaDeaths.get("drown");
+                reason = BetaDeaths.getDeathMsg("drown");
                 break;
             case LIGHTNING:
-                reason = BetaDeaths.get("lightning");
+                reason = BetaDeaths.getDeathMsg("lightning");
                 break;
             case PROJECTILE:
-                reason = BetaDeaths.get("attack_projectile");
+                reason = BetaDeaths.getDeathMsg("attack_projectile");
                 break;
             case SUFFOCATION:
-                reason = BetaDeaths.get("suffocation");
+                reason = BetaDeaths.getDeathMsg("suffocation");
                 break;
             case BLOCK_EXPLOSION:
-                reason = BetaDeaths.get("explosion_block");
+                reason = BetaDeaths.getDeathMsg("explosion_block");
                 break;
             case ENTITY_EXPLOSION:
-                reason = BetaDeaths.get("explosion");
+                reason = BetaDeaths.getDeathMsg("explosion");
                 break;
             default:
-                reason = BetaDeaths.get("default_cause");
+                reason = BetaDeaths.getDeathMsg("default_cause");
                 break;
         }
 
         if (reason.isEmpty()) return;
         String msg = reason
-                .replace("(p)", p.getDisplayName())
-                .replace("(e)", damager)
+                .replace("(victim)", entityName)
+                .replace("(damager)", damagerName)
                 .replace('&', '§');
         Bukkit.getServer().broadcastMessage(msg);
-        BetaDeaths.logger.info(msg);
+        BetaDeaths.log(msg);
+        if (BetaDeaths.getInstance().dcBridgeHook) DCBridge.sendDCMsg(msg);
     }
+
+    private boolean isEntityCacheable(Entity entity) {return entity instanceof Player || entity instanceof Tameable;}
 }

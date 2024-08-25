@@ -1,74 +1,94 @@
 package me.lukiiy.BetaDeaths;
 
-import org.bukkit.Bukkit;
+import lombok.Getter;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BetaDeaths extends JavaPlugin {
-    public static BetaDeaths inst;
-    public static Configuration config;
-    public static Logger logger;
+    @Getter private static BetaDeaths instance;
+
+    public Configuration config;
+    private static Logger log;
+
+    public boolean dcBridgeHook;
+    private Map<Entity, Entity> lastDamager;
 
     @Override
     public void onEnable() {
-        inst = this;
+        instance = this;
+        log = getServer().getLogger();
+        setupConfig();
+
+        lastDamager = new HashMap<>();
         PluginManager pl = getServer().getPluginManager();
-        logger = getServer().getLogger();
 
         pl.registerEvent(Event.Type.ENTITY_DAMAGE, new Listener(), Event.Priority.Lowest, this);
         pl.registerEvent(Event.Type.ENTITY_DEATH, new Listener(), Event.Priority.Normal, this);
+
         getCommand("betadeaths").setExecutor(new ReloadCMD());
 
-        if (mcVersion() > 173) {
-            logger.warning("This plugin will be disabled due to death messages being added in b1.8.");
+        if (GenericUtils.getMCVersion(getServer().getVersion()) > 173) {
+            log.warning("This plugin will be disabled due to death messages being added in b1.8.");
             pl.disablePlugin(this);
+            return;
         }
 
-        config();
+        dcBridgeHook = BetaDeaths.confBool("hooks.dcBridge") && pl.isPluginEnabled("DiscordBridge");
     }
 
     @Override
     public void onDisable() {}
 
-    public static String get(String path) {return config.getString(path);}
+    public static void log(String info) {log.info(info);}
 
-    public void config() { // todo
+    // Config
+    public void setupConfig() {
         config = getConfiguration();
         config.load();
-        config.getString("contact", "(p) was pricked to death");
-        config.getString("attack", "(p) was slain by (e)");
-        config.getString("attack_projectile", "(p) was shot by (e)");
-        config.getString("fall", "(p) fell from a high place");
-        config.getString("hard_fall", "(p) hit the ground too hard");
-        config.getString("fire", "(p) went up in flames");
-        config.getString("burn", "(p) burned to death");
-        config.getString("lava", "(p) tried to swim in lava");
-        config.getString("void", "(p) fell out of the world");
-        config.getString("suicide", "(p) was killed");
-        config.getString("drown", "(p) drowned");
-        config.getString("lightning", "(p) was struck by lightning");
-        config.getString("suffocation", "(p) suffocated in a wall");
-        config.getString("explosion", "(p) was blown up by (e)");
-        config.getString("explosion_block", "(p) blew up");
-        config.getString("void", "(p) fell out of the world");
-        config.getString("default_cause", "(p) died");
-        config.getString("unknownEntity", "(p) unknown");
+
+        String m = "msgs.";
+        config.getString(m + "contact", "(victim) was pricked to death");
+        config.getString(m + "attack", "(victim) was slain by (damager)");
+        config.getString(m + "attack_projectile", "(victim) was shot by (damager)");
+        config.getString(m + "fall", "(victim) fell from a high place");
+        config.getString(m + "hard_fall", "(victim) hit the ground too hard");
+        config.getString(m + "fire", "(victim) went up in flames");
+        config.getString(m + "burn", "(victim) burned to death");
+        config.getString(m + "lava", "(victim) tried to swim in lava");
+        config.getString(m + "void", "(victim) fell out of the world");
+        config.getString(m + "suicide", "(victim) was killed");
+        config.getString(m + "drown", "(victim) drowned");
+        config.getString(m + "lightning", "(victim) was struck by lightning");
+        config.getString(m + "suffocation", "(victim) suffocated in a wall");
+        config.getString(m + "explosion", "(victim) was blown up by (damager)");
+        config.getString(m + "explosion_block", "(victim) blew up");
+        config.getString(m + "void", "(victim) fell out of the world");
+        config.getString(m + "default_cause", "(victim) died");
+        config.getString(m + "unknownEntity", "(victim) unknown");
+
+        config.getBoolean("broadcastTamedMobsDeaths", true);
+        config.getBoolean("hooks.dcBridge", true);
+
         config.save();
     }
 
-    private int mcVersion() { // workaround ;)
-        String version = Bukkit.getServer().getVersion();
-        Matcher matcher = Pattern.compile("\\(MC: (\\d)\\.(\\d)\\.(\\d)\\)").matcher(version);
-        if (matcher.find()) {
-            String patch = matcher.group(3) != null ? matcher.group(3) : "0";
-            return Integer.parseInt(matcher.group(1) + matcher.group(2) + patch);
-        }
-        return 0;
+    public static String getDeathMsg(String path) {return instance.config.getString("msgs." + path);}
+    public static boolean confBool(String path) {return instance.config.getBoolean(path, false);}
+    
+    // Entity Damage By Entity Cache
+    public static Entity getEntityLastDamager(@NotNull Entity entity) {
+        return instance.lastDamager.get(entity);
+    }
+
+    public static void setEntityLastDamager(@NotNull Entity entity, @NotNull Entity damager) {
+        instance.lastDamager.put(entity, damager);
     }
 }
