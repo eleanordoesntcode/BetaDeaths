@@ -1,5 +1,5 @@
 name: BetaDeaths
-version: '${project.version}'
+version: '1.0'
 main: me.lukiiy.BetaDeaths.BetaDeaths
 author: Lukiiy
 description: Adds Death Messages to old beta versions

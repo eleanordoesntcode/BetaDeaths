@@ -6,7 +6,6 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,11 +83,11 @@ public class BetaDeaths extends JavaPlugin {
     public static boolean confBool(String path) {return instance.config.getBoolean(path, false);}
     
     // Entity Damage By Entity Cache
-    public static Entity getEntityLastDamager(@NotNull Entity entity) {
+    public static Entity getEntityLastDamager(Entity entity) {
         return instance.lastDamager.get(entity);
     }
 
-    public static void setEntityLastDamager(@NotNull Entity entity, @NotNull Entity damager) {
+    public static void setEntityLastDamager(Entity entity, Entity damager) {
         instance.lastDamager.put(entity, damager);
     }
 }
