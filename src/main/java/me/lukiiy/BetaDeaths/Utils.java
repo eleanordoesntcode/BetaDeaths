@@ -5,7 +5,7 @@ import org.bukkit.entity.Entity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GenericUtils {
+public class Utils {
     public static String getEntityName(Entity e) {
         return e.getClass().getSimpleName().replace("Craft", "");
     }

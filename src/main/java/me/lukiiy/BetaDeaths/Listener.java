@@ -23,7 +23,7 @@ public class Listener extends EntityListener {
         if (!isEntityCacheable(entity)) return;
         if (entity instanceof Tameable && !((Tameable) entity).isTamed()) return;
 
-        String entityName = entity instanceof Player ? ((Player) entity).getName() : GenericUtils.getEntityName(entity);
+        String entityName = entity instanceof Player ? ((Player) entity).getName() : Utils.getEntityName(entity);
 
         EntityDamageEvent.DamageCause cause = entity.getLastDamageCause().getCause();
 
@@ -34,7 +34,7 @@ public class Listener extends EntityListener {
         if (lastDamager != null) {
             if (lastDamager instanceof Projectile) lastDamager = ((Projectile) lastDamager).getShooter();
             if (lastDamager instanceof LivingEntity) {
-                damagerName = (lastDamager instanceof Player) ? ((Player) lastDamager).getDisplayName() : GenericUtils.getEntityName(lastDamager);
+                damagerName = (lastDamager instanceof Player) ? ((Player) lastDamager).getDisplayName() : Utils.getEntityName(lastDamager);
                 if (lastDamager instanceof Creeper && cause == EntityDamageEvent.DamageCause.ENTITY_ATTACK) cause = EntityDamageEvent.DamageCause.ENTITY_EXPLOSION;
             }
         }

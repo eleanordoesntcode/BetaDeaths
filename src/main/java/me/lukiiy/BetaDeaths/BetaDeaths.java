@@ -34,7 +34,7 @@ public class BetaDeaths extends JavaPlugin {
 
         getCommand("betadeaths").setExecutor(new ReloadCMD());
 
-        if (GenericUtils.getMCVersion(getServer().getVersion()) > 173) {
+        if (Utils.getMCVersion(getServer().getVersion()) > 173) {
             log.warning("This plugin will be disabled due to death messages being added in b1.8.");
             pl.disablePlugin(this);
             return;
