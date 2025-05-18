@@ -55,7 +55,7 @@
             <version>1.1.10-250328-1731-f67a8e3</version>
         </dependency>
         <dependency>
-	    <groupId>com.github.Lukiiy</groupId>
+	    <groupId>com.github.eleanordoesntcode</groupId>
 	    <artifactId>DiscordBridge</artifactId>
 	    <version>1.0-b1.7.3</version>
 	</dependency>
