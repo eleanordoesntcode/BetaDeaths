@@ -8,6 +8,31 @@
     <artifactId>BetaDeaths</artifactId>
     <version>1.0</version>
 
+    <repositories>
+        <!-- Repository for resolving release dependencies -->
+        <repository>
+            <id>johnymuffin-nexus-releases</id>
+            <url>https://repository.johnymuffin.com/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- Repository for resolving snapshot dependencies -->
+        <repository>
+            <id>johnymuffin-nexus-snapshots</id>
+            <url>https://repository.johnymuffin.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+         
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -19,6 +44,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.legacyminecraft.poseidon</groupId>
+            <artifactId>poseidon-craftbukkit</artifactId>
+            <version>1.1.10-250328-1731-f67a8e3</version>
         </dependency>
     </dependencies>
 
